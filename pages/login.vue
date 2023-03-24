@@ -1,55 +1,32 @@
 <template>
-  <a-login :error="error" @signIn="login" @signUp="createUser"></a-login>
+  <a-login :error="userStore.error" @signIn="userStore.signUserIn"></a-login>
 </template>
 
 <script>
-import {mapState, mapActions, mapGetters} from 'vuex'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 
 export default {
-  data: ()=>({
-    error:'',
-    errorCode: {
-      'invalid-email': 'Invalid e-mail',
-      'user-disabled': 'User account is disabled',
-      'user-not-found': 'User not found, try to sign up instead',
-      'wrong-password': 'Wrong password',
-      'email-already-in-use': 'Email already in use, try to sign in instead'
-    }
-  }),
-  async fetch(){
-    await this.initAuth()
+  setup(){
+    const userStore = useUserStore()
+    const {logged} = storeToRefs(userStore)
+    const router = useRouter()
+    watch (
+      logged,
+      (logged) => {
+        if (logged) {
+          router.push(userStore.afterLogin)
+        }
+      },
+      {immediate: true}
+    )
+    return {userStore}
   },
-  computed: {
-    ...mapGetters('user', ['logged']),
-    ...mapState('user', ['afterLogin'])
-  },
-  watch: {
-    logged: {
-      immediate: true,
-      handler(logged) {
-        if (logged) this.$router.push(this.afterLogin)
-      }
-    }
-  },
-  methods: {
-    ...mapActions('user', ['signUserIn', 'initAuth', 'signUserUp']),
-    async createUser(user){
-      await this.login(user, true)
-    },
-    async login(user, signUp=false) {
-      try {
-        this.error=''
-        if (signUp)
-          await this.signUserUp(user)
-        else await this.signUserIn(user)
-      }
-      catch (error) {
-        const code=error.code.substring(5)
-        this.error=this.errorCode[code] ? this.errorCode[code] : code
-      }
-    }
+  mounted(){
+    this.userStore.initAuth()
   },
 }
+
 </script>
 
 <style scoped></style>

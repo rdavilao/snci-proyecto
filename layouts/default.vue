@@ -1,131 +1,87 @@
 <template>
-  <v-app dark>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
+  <v-app>
+    <v-navigation-drawer theme="dark" v-model="drawer" rail expand-on-hover>
+      <v-list-item v-if="logged" nav prepend-avatar="https://randomuser.me/api/portraits/women/75.jpg"> Bienvenido
+        Daniel</v-list-item>
+      <v-list-item v-else="logged" nav prepend-avatar="https://randomuser.me/api/portraits/lego/1.jpg"> Bienvenido
+      </v-list-item>
+      <v-divider></v-divider>
       <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
+        <div v-for="(item, i) in items" >
+          <v-list-item v-if="item.needLogged == logged" :key="i" :to="item.to" :title="item.title" :prepend-icon="item.icon" 
+            exact>
+          </v-list-item>
+        </div>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
+    <v-app-bar>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-spacer />
+      <v-btn v-if="logged" icon @click.stop="doLogout()">
+        <v-icon>mdi-logout</v-icon>
       </v-btn>
-      <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>mdi-application</v-icon>
+      <v-btn v-else icon to="/login">
+        <v-icon>mdi-login</v-icon>
       </v-btn>
-      <v-toolbar-title v-text="title" />
-      <v-spacer />      
-      <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-        <v-icon>mdi-account</v-icon>
-      </v-btn>
-      <v-tooltip v-if="logged" bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn 
-            v-if="logged"          
-            icon 
-            v-bind="attrs"
-            v-on="on" 
-            @click.stop="doLogout()">
-          <v-icon>mdi-logout</v-icon>
-        </v-btn>        
-        </template>
-        <span>Log Out</span>
-      </v-tooltip>
-      <v-tooltip v-else bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn          
-            icon 
-            to="/login"
-            v-bind="attrs"
-            v-on="on">
-          <v-icon>mdi-login</v-icon>
-        </v-btn>        
-        </template>
-        <span>Sign In</span>
-      </v-tooltip> 
     </v-app-bar>
+
     <v-main>
       <v-container>
-        <Nuxt />
+        <slot />
       </v-container>
     </v-main>
-    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
-      <v-list>
-        <v-list-item>
-          <v-list-item-action>
-            <v-icon light> mdi-repeat </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Notification</v-list-item-title>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-action>
-            <v-icon light> mdi-repeat </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer :absolute="!fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
   </v-app>
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-
+import { mapActions, mapState } from 'pinia'
+import { useUserStore } from '@/stores/user'
 export default {
-  name: 'DefaultLayout',
-  data() {
-    return {
-      clipped: false,
-      drawer: false,
-      fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/',
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
-        },
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js',
-    }
-  },
+  data: () => ({
+    drawer: false,
+    title: 'UniUnite',
+    items: [
+      {
+        icon: 'mdi-apps',
+        title: 'Welcome',
+        needLogged: false,
+        to: '/',
+      },
+      {
+        icon: 'mdi-chart-bubble',
+        title: 'Inspire',
+        needLogged: true,
+        to: '/inspire',
+      },
+      {
+        icon: 'mdi-chart-bubble',
+        title: 'Users',
+        needLogged: true,
+        to: '/users',
+      },
+      {
+        icon: 'mdi-chart-bubble',
+        title: 'Login',
+        needLogged: false,
+        to: '/login',
+      },
+      {
+        icon: 'mdi-chart-bubble',
+        title: 'Sign Up',
+        needLogged: false,
+        to: '/register',
+      },
+    ],
+  }),
   computed: {
-    ...mapGetters('user', ['logged'])
+    ...mapState(useUserStore, ['logged']),
   },
   methods: {
-    ...mapActions('user', ['logout']),
-    doLogout(){
-      this.logout()
-      this.$router.push('/')
+    ...mapActions(useUserStore, ['logout']),
+    async doLogout() {
+      await this.logout()
+      await this.$router.push('/')
     }
   }
 }

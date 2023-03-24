@@ -24,15 +24,15 @@
   </v-carousel>
     </v-card-text>
 </v-card>
-
-
-
 </template>
 
 <script>
 export default {
-  middleware: 'autenticado', // poner en todas las páginas que requieran autenticación
-  data: () => ({})
+  setup(){
+    definePageMeta({
+      middleware: 'autenticado', // poner en todas las páginas que requieran autenticación
+    })
+  },
 }
 </script>
 

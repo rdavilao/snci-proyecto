@@ -1,7 +1,12 @@
-export default function({ store, redirect, route }) {
+import { useUserStore } from '@/stores/user'
+
+export default defineNuxtRouteMiddleware((to, from) => {
+
+  const userStore = useUserStore()
   const loginPage = '/login'
-  if (!store.getters['user/logged']) {
-    store.commit('user/setAfterLogin', route.path)
-    redirect(loginPage)
+  if (!userStore.logged) {
+    userStore.setAfterLogin(to.path)
+    return navigateTo(loginPage)
   }
-}
+
+})

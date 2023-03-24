@@ -8,11 +8,10 @@
           }}</v-alert>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field          
+          <v-text-field
             v-model="email"
-            :append-icon="'mdi-account'"
             :rules="[rules.email]"
-            label="E-mail"       
+            label="E-mail"
             required
           ></v-text-field>
         </v-col>
@@ -26,25 +25,19 @@
             label="Password"
             @click:append="show = !show"
           ></v-text-field>
-        </v-col>                                
+        </v-col>
         <v-col>
           <v-btn :disabled="!valid" @click="onSignIn">Sign in</v-btn>
         </v-col>
         <v-col>
-          <v-btn :disabled="!valid" @click="onSignUp">Sign Up</v-btn>
-        </v-col>        
+          <v-btn @click="onSignUp">Sign Up</v-btn>
+        </v-col>
       </v-row>
     </v-container>
   </v-form>
 </template>
 
 <script>
-import { collection, addDoc } from 'firebase/firestore'
-import { getFireSt } from '~/services/fireinit'
-
-const db = getFireSt()      
-const colRef = collection(db, 'users')
-
 export default {
   props: {
     error: {
@@ -56,7 +49,7 @@ export default {
     valid: false,
     show: false,
     email: '',
-    password: ''
+    password: '',
   }),
   computed: {
     rules() {
@@ -75,12 +68,8 @@ export default {
       this.$emit('signIn', { email: this.email, password: this.password })
     },
     onSignUp() {
-      const user = {
-        email: this.email
-      }
-      this.$emit('signUp', { email: this.email, password: this.password }) 
-      addDoc(colRef, user).then(() => {})      
-    }
+      this.$router.push('register')
+    },
   },
 }
 </script>

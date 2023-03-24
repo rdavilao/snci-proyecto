@@ -1,0 +1,31 @@
+<template>
+    <a-register :error="userStore.error" @signUp="userStore.signUserUp"></a-register>
+</template>
+  
+<script>
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
+
+export default {
+    setup() {
+        const userStore = useUserStore()
+        const { logged } = storeToRefs(userStore)
+        const router = useRouter()
+        watch(
+            logged,
+            (logged) => {
+                if (logged) {
+                    router.push(userStore.afterLogin)
+                }
+            },
+            { immediate: true }
+        )
+        return { userStore }
+    },
+    mounted() {
+        this.userStore.initAuth()
+    },
+}
+</script>
+  
+<style scoped></style>

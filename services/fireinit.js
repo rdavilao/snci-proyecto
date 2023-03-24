@@ -1,11 +1,11 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from "firebase/firestore";
-
 import {
   getAuth,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  connectAuthEmulator,
   sendEmailVerification,
   sendPasswordResetEmail,
   signOut
@@ -14,6 +14,8 @@ import {
 import { firebaseConfig } from '~/services/config'
 // copia en /services/config.js el fichero .json con la configuración de firebase
 // similar al ejemplo /services/config.js.example
+
+const useEmulator = process.env.UseEmulator || false
 
 let app
 let auth
@@ -24,6 +26,7 @@ export function initApp(){
   return app
 }
 
+//Initilize firestore database
 export function getFireSt() {
   if (!db) db = getFirestore(initApp())
   return db
@@ -31,7 +34,12 @@ export function getFireSt() {
 
 export function initAuth(userCallback){
   // Initialize Firebase
-  if (!auth) auth = getAuth(initApp())
+  if (!auth) {
+    auth = getAuth(initApp())
+    if (useEmulator) {
+      connectAuthEmulator(auth, "http://localhost:9099");
+    }
+  }
   if (userCallback){
     onAuthStateChanged(auth, userCallback)
   }
@@ -59,12 +67,12 @@ export async function createUser(email, password) {
     email,
     password
   )
-  return userCredential.user
+  return userCredential? userCredential.user : null
 }
 
 export async function logIn(email, password) {
   const userCredential = await signInWithEmailAndPassword(initAuth(), email, password)
-  return userCredential.user
+  return userCredential? userCredential.user : null
 }
 
 export async function logOut() {
