@@ -32,20 +32,36 @@
       <v-btn icon @click.stop="clipped = !clipped">
         <v-icon>mdi-application</v-icon>
       </v-btn>
-      <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />      
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-        <v-icon>mdi-menu</v-icon>
+        <v-icon>mdi-account</v-icon>
       </v-btn>
-      <v-btn v-if="logged" icon @click.stop="doLogout()">
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
-      <v-btn v-else icon to="/login">
-        <v-icon>mdi-login</v-icon>
-      </v-btn>
+      <v-tooltip v-if="logged" bottom>
+        <template #activator="{ on, attrs }">
+          <v-btn 
+            v-if="logged"          
+            icon 
+            v-bind="attrs"
+            v-on="on" 
+            @click.stop="doLogout()">
+          <v-icon>mdi-logout</v-icon>
+        </v-btn>        
+        </template>
+        <span>Log Out</span>
+      </v-tooltip>
+      <v-tooltip v-else bottom>
+        <template #activator="{ on, attrs }">
+          <v-btn          
+            icon 
+            to="/login"
+            v-bind="attrs"
+            v-on="on">
+          <v-icon>mdi-login</v-icon>
+        </v-btn>        
+        </template>
+        <span>Sign In</span>
+      </v-tooltip> 
     </v-app-bar>
     <v-main>
       <v-container>
@@ -54,7 +70,13 @@
     </v-main>
     <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
       <v-list>
-        <v-list-item @click.native="right = !right">
+        <v-list-item>
+          <v-list-item-action>
+            <v-icon light> mdi-repeat </v-icon>
+          </v-list-item-action>
+          <v-list-item-title>Notification</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
           <v-list-item-action>
             <v-icon light> mdi-repeat </v-icon>
           </v-list-item-action>

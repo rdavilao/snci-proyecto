@@ -1,4 +1,6 @@
 import { initializeApp } from 'firebase/app'
+import { getFirestore } from "firebase/firestore";
+
 import {
   getAuth,
   onAuthStateChanged,
@@ -15,10 +17,16 @@ import { firebaseConfig } from '~/services/config'
 
 let app
 let auth
+let db
 
 export function initApp(){
   if (!app) app = initializeApp(firebaseConfig)
   return app
+}
+
+export function getFireSt() {
+  if (!db) db = getFirestore(initApp())
+  return db
 }
 
 export function initAuth(userCallback){
