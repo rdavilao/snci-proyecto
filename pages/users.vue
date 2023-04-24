@@ -21,9 +21,9 @@
         src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
         cover
       ></v-carousel-item>
-  </v-carousel>
+    </v-carousel>
     </v-card-text>
-</v-card>
+  </v-card>
 </template>
 
 <script>

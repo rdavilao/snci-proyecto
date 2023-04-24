@@ -1,6 +1,6 @@
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
-
+import { ref, uploadBytes, getStorage, getDownloadURL } from 'firebase/storage'
 import {
   initAuth,
   logIn,
@@ -9,10 +9,12 @@ import {
   emailReset,
   emailVerification,
   getFireSt,
+  getStor,
 } from '~/services/fireinit'
 
 const db = getFireSt()
 const colRef = 'users'
+const storage = getStor()
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -32,27 +34,46 @@ export const useUserStore = defineStore('user', {
     uid: (state) => (state.user ? state.user.uid : ''),
     logged: (state) => state.user !== null,
     email: (state) => (state.user ? state.user.email : ''),
-    name: (state) =>
-      state.user
-        ? state.user.displayName
-          ? state.user.displayName
-          : state.user.email
-        : '',
+    name: (state) => (state.user ? state.userInfo.name : ''),
   },
   actions: {
+    async setUser(userLog) {
+      const docRef = doc(db, 'users', userLog.uid)
+      const docSnap = await getDoc(docRef)
+      const userData = docSnap.data()
+      const photoRef = ref(
+        storage,
+        userLog.uid + '/' + 'img/' + userData.photoName
+      )
+      const photoURL = await getDownloadURL(photoRef)
+      const user = {
+        ...userLog,
+        firstName: userData.firstName ? userData.firstName : 'error',
+        lastname: userData.lastName ? userData.lastName : '',
+        photoName: userData.photoName ? userData.photoName : '',
+        photoUrl: photoURL ? photoURL : '',
+        usefulLikes: userData.usefulLikes ? userData.usefulLikes : 0,
+      }
+      this.user = user
+    },
     setAfterLogin(url) {
       this.afterLogin = url
     },
     clearError() {
       this.error = ''
     },
-    async signUserUp({ email, password, firstName, lastName }) {
-      await this._doAction(createUser(email, password))
-      await setDoc(doc(db, colRef, this.user.uid), {
-        email,
-        firstName,
-        lastName,
-        usefulLikes: 0,
+    async signUserUp({ email, password, firstName, lastName, photo }) {
+      var photoName = photo.name
+      await this._doAction(createUser(email, password)).then((userCredentials) => {
+        const storageRef = ref(storage, userCredentials.uid + '/img/' + photoName)
+        uploadBytes(storageRef, photo).then(() => {})
+        setDoc(doc(db, colRef, userCredentials.uid), {
+          email,
+          firstName,
+          lastName,
+          photoName,
+          usefulLikes: 0,
+        })
       })
       return this.user
     },
@@ -73,14 +94,14 @@ export const useUserStore = defineStore('user', {
       if (!this.authInit) {
         this.authInit = true
         initAuth((user) => {
-          if (user)
-            this.user = {
-              displayName: user.displayName,
+          if (user) {
+            const userLog = {
               email: user.email,
               uid: user.uid,
               emailVerified: user.emailVerified,
             }
-          else this.user = null
+            this.setUser(userLog)
+          } else this.user = null
         })
       }
       return this.authInit

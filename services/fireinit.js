@@ -12,6 +12,7 @@ import {
 } from 'firebase/auth'
 
 import { firebaseConfig } from '~/services/config'
+import { getStorage } from 'firebase/storage';
 // copia en /services/config.js el fichero .json con la configuración de firebase
 // similar al ejemplo /services/config.js.example
 
@@ -20,6 +21,7 @@ const useEmulator = process.env.UseEmulator || false
 let app
 let auth
 let db
+let storage
 
 export function initApp(){
   if (!app) app = initializeApp(firebaseConfig)
@@ -30,6 +32,12 @@ export function initApp(){
 export function getFireSt() {
   if (!db) db = getFirestore(initApp())
   return db
+}
+
+//Initialize firebase storage
+export function getStor() {
+  if(!storage) storage = getStorage(initApp())
+  return storage
 }
 
 export function initAuth(userCallback){
