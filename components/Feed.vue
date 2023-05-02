@@ -30,7 +30,7 @@
         <v-divider></v-divider>
         <v-row class="mb-1">
             <v-col style="margin-left: 15px; margin-top: 10px; font-size: 10px;">
-                {{ pub[1].likes }} &nbsp;likes
+                {{ pub[1].likes }} &nbsp;usefulness
             </v-col>
             <v-col style="margin-right: 15px; margin-top: 10px; font-size: 10px;" class="text-end">
                 # &nbsp;comments
@@ -40,7 +40,7 @@
         <v-card-actions class="d-flex justify-center">
             <v-row>
                 <v-col cols="4">
-                    <v-btn width="100%" @click="like(pub[0])"><v-icon class="mdi mdi-thumb-up"></v-icon>&nbsp; Like</v-btn>
+                    <v-btn width="100%" @click="like(pub[0])"><v-icon class="mdi mdi-thumb-up"></v-icon>&nbsp; Useful Like</v-btn>
                 </v-col>
                 <v-col cols="4">
                     <v-btn width="100%" @click="downloadDoc(pub[1].author, pub[0], pub[1].docName)"><v-icon
