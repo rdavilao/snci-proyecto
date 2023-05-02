@@ -52,22 +52,10 @@ export default {
     title: 'UniUnite',
     items: [
       {
-        icon: 'mdi-apps',
-        title: 'Welcome',
-        needLogged: 'none',
+        icon: 'mdi-home',
+        title: 'Home',
+        needLogged: true,
         to: '/',
-      },
-      {
-        icon: 'mdi-chart-bubble',
-        title: 'Inspire',
-        needLogged: true,
-        to: '/inspire',
-      },
-      {
-        icon: 'mdi-chart-bubble',
-        title: 'Users',
-        needLogged: true,
-        to: '/users',
       },
       {
         icon: 'mdi-chart-bubble',
@@ -90,7 +78,7 @@ export default {
     ...mapActions(useUserStore, ['logout']),
     async doLogout() {
       await this.logout()
-      await this.$router.push('/')
+      await this.$router.push('/login')
     }
   }
 }
