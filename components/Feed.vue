@@ -40,7 +40,9 @@
         <v-card-actions class="d-flex justify-center">
             <v-row>
                 <v-col cols="4">
-                    <v-btn width="100%" @click="like(pub[0])"><v-icon class="mdi mdi-thumb-up"></v-icon>&nbsp; Useful Like</v-btn>
+                    <v-btn width="100%" @click="like(pub[0], pub[1].likesRef ? pub[1].likesRef : null)"
+                        :active="isLiked(pub[1].likesRef ? pub[1].likesRef : null)"><v-icon
+                            class="mdi mdi-thumb-up"></v-icon>&nbsp; Useful Like</v-btn>
                 </v-col>
                 <v-col cols="4">
                     <v-btn width="100%" @click="downloadDoc(pub[1].author, pub[0], pub[1].docName)"><v-icon
@@ -57,13 +59,18 @@
 <script setup>
 import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
 import { getFireSt, getCurrentUser } from "~~/services/fireinit";
-defineEmits(['likePub']);
 
 const db = getFireSt()
 const colRef = 'publications'
 
 const publications = reactive([])
 const users = reactive({})
+
+let actual_user = null
+
+onMounted(async () => {
+    actual_user = await getCurrentUser()
+})
 
 const q_publications = query(collection(db, colRef), orderBy("created_at", "desc"));
 const unsubscribe_pub = onSnapshot(q_publications, (querySnapshot) => {
@@ -79,13 +86,31 @@ const unsubscribe_users = onSnapshot(q_users, (querySnapshot) => {
         users[document.id] = document.data();
     });
 });
+
+const isLiked = (likesRef) => {
+    if (!likesRef) {
+        return false
+    }
+    if (!likesRef.includes(actual_user.uid)) {
+        return false
+    }
+    if (likesRef.includes(actual_user.uid)) {
+        return true
+    }
+}
 </script>
 
 <script>
 export default {
     methods: {
-        like(id) {
-            this.$emit('likePub', id)
+        async like(id, likesRef) {
+            const actualUser = await getCurrentUser()
+            const data = {
+                id,
+                actualUser: actualUser.uid,
+                likesRef,
+            }
+            this.$emit('likePub', data)
         },
         downloadDoc(authorId, documentId, documentName) {
             const data = {

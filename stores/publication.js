@@ -54,11 +54,30 @@ export const usePublicationStore = defineStore('publication', {
       )
       uploadBytes(storageRef, document).then(() => {})
     },
-    async addLike(id) {
+    async addLike({ id, actualUser, likesRef }) {
       const docRef = doc(db, colRef, id)
-      await updateDoc(docRef, {
-        likes: increment(1),
-      })
+      if (!likesRef) {
+        var likesArray = []
+        likesArray.push(actualUser)
+        await updateDoc(docRef, {
+          likes: increment(1),
+          likesRef: likesArray,
+        })
+      } else {
+        if (likesRef.includes(actualUser)) {
+          likesRef.pop(actualUser)
+          await updateDoc(docRef, {
+            likes: increment(-1),
+            likesRef: likesRef,
+          })
+        } else {
+          likesRef.push(actualUser)
+          await updateDoc(docRef, {
+            likes: increment(1),
+            likesRef: likesRef,
+          })
+        }
+      }
     },
     async downloadDocument({ authorId, documentId, documentName }) {
       const fileRef = ref(
