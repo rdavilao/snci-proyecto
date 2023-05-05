@@ -54,14 +54,18 @@ export const usePublicationStore = defineStore('publication', {
       )
       uploadBytes(storageRef, document).then(() => {})
     },
-    async addLike({ id, actualUser, likesRef }) {
+    async addLike({ id, authorId, actualUser, likesRef }) {
       const docRef = doc(db, colRef, id)
+      const userRef = doc(db, 'users', authorId)
       if (!likesRef) {
         var likesArray = []
         likesArray.push(actualUser)
         await updateDoc(docRef, {
           likes: increment(1),
           likesRef: likesArray,
+        })
+        await updateDoc(userRef, {
+          usefulLikes: increment(1),
         })
       } else {
         if (likesRef.includes(actualUser)) {
@@ -70,11 +74,17 @@ export const usePublicationStore = defineStore('publication', {
             likes: increment(-1),
             likesRef: likesRef,
           })
+          await updateDoc(userRef, {
+            usefulLikes: increment(-1),
+          })
         } else {
           likesRef.push(actualUser)
           await updateDoc(docRef, {
             likes: increment(1),
             likesRef: likesRef,
+          })
+          await updateDoc(userRef, {
+            usefulLikes: increment(1),
           })
         }
       }

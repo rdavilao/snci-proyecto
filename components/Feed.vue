@@ -40,7 +40,7 @@
         <v-card-actions class="d-flex justify-center">
             <v-row>
                 <v-col cols="4">
-                    <v-btn width="100%" @click="like(pub[0], pub[1].likesRef ? pub[1].likesRef : null)"
+                    <v-btn width="100%" @click="like(pub[0], pub[1].author, pub[1].likesRef ? pub[1].likesRef : null)"
                         :active="isLiked(pub[1].likesRef ? pub[1].likesRef : null)"><v-icon
                             class="mdi mdi-thumb-up"></v-icon>&nbsp; Useful Like</v-btn>
                 </v-col>
@@ -103,10 +103,11 @@ const isLiked = (likesRef) => {
 <script>
 export default {
     methods: {
-        async like(id, likesRef) {
+        async like(id, authorId, likesRef) {
             const actualUser = await getCurrentUser()
             const data = {
                 id,
+                authorId,
                 actualUser: actualUser.uid,
                 likesRef,
             }
