@@ -32,9 +32,6 @@
             <v-col style="margin-left: 15px; margin-top: 10px; font-size: 10px;">
                 {{ pub[1].likes }} &nbsp;usefulness
             </v-col>
-            <v-col style="margin-right: 15px; margin-top: 10px; font-size: 10px;" class="text-end">
-                # &nbsp;comments
-            </v-col>
         </v-row>
         <v-divider></v-divider>
         <v-card-actions class="d-flex justify-center">
@@ -49,10 +46,16 @@
                             class="mdi mdi-cloud-download"></v-icon>&nbsp; Descargar</v-btn>
                 </v-col>
                 <v-col cols="4">
-                    <v-btn width="100%"><v-icon class="mdi mdi-comment"></v-icon>&nbsp; Comentar</v-btn>
+                    <v-btn width="100%" @click="comentarios(pub[0])"><v-icon class="mdi mdi-comment"></v-icon>&nbsp;
+                        Comentar</v-btn>
                 </v-col>
             </v-row>
         </v-card-actions>
+
+        <div :id=pub[0] style="display: none;">
+            <send-button :pubId=pub[0]></send-button>
+            <chat :messagesId=pub[0]></chat>
+        </div>
     </v-card>
 </template>
 
@@ -120,7 +123,19 @@ export default {
                 documentName
             }
             this.$emit('downloadDoc', data)
+        },
+        comentarios(pubId) {
+            console.log(pubId)
+            //Mostrar y ocultar
+            const comentarios = document.getElementById(pubId)
+            if (comentarios.style.display == "block") {
+                comentarios.style.display = "none"
+            }
+            else {
+                comentarios.style.display = "block"
+            }
         }
     }
 }
 </script>
+
