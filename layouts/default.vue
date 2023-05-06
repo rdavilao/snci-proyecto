@@ -58,6 +58,12 @@ export default {
         to: '/',
       },
       {
+        icon: 'mdi-account',
+        title: 'My Profile',
+        needLogged: true,
+        to: '/profile',
+      },
+      {
         icon: 'mdi-chart-bubble',
         title: 'Login',
         needLogged: false,
