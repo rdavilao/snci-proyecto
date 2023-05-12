@@ -28,6 +28,43 @@
             </v-col>
         </v-row>
     </v-card>
+    <v-card>
+        <v-card-title>
+            Achievements
+        </v-card-title>
+        <v-card-text>
+            <v-row>
+                <v-col v-if="user.usefulLikes >= 1">
+                    <v-avatar size="100" rounded="1">
+                        <v-img cover src="/first_like.png">
+                        </v-img>
+                        <v-tooltip activator="parent" location="bottom">A good start !</v-tooltip>
+                    </v-avatar>
+                </v-col>
+                <v-col v-if="user.usefulLikes >= 10">
+                    <v-avatar size="100" rounded="1">
+                        <v-img cover src="/bronce.png">
+                        </v-img>
+                        <v-tooltip activator="parent" location="bottom">You are recognized !</v-tooltip>
+                    </v-avatar>
+                </v-col>
+                <v-col v-if="user.usefulLikes >= 50">
+                    <v-avatar size="100" rounded="1">
+                        <v-img cover src="/plata.png">
+                        </v-img>
+                        <v-tooltip activator="parent" location="bottom">You are becoming more important !</v-tooltip>
+                    </v-avatar>
+                </v-col>
+                <v-col v-if="user.usefulLikes >= 100">
+                    <v-avatar size="100" rounded="1">
+                        <v-img cover src="/oro.png">
+                        </v-img>
+                        <v-tooltip activator="parent" location="bottom">They need you !</v-tooltip>
+                    </v-avatar>
+                </v-col>
+            </v-row>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
